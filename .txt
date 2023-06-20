@@ -1,0 +1,35 @@
+docker network create go-app-network
+docker volume create mysql-go-data
+docker volume create mysql-go-config-deamond
+
+docker network remove go-app-network
+docker volume remove mysql-go-data
+docker volume remove mysql-go-config-deamond
+
+docker run --rm -d \
+-v mysql-go-data:/var/lib/mysql \
+-v mysql-go-config-deamond:/etc/mysql/conf.d \
+--name mysql-go-container \
+-p 3301:3306 \
+-e MYSQL_USER=sangnd -e MYSQL_PASSWORD=12345678 \
+-e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=godb \
+--network go-app-network \
+mysql:latest
+
+
+use godb;
+CREATE TABLE `todo_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(150) CHARACTER SET utf8 NOT NULL,
+  `status` enum('Doing','Finished') DEFAULT 'Doing',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `godb`.`todo_items`
+(`id`,
+`title`,
+`status`)
+VALUES
+(0,
+"Nguyen Sang",
+"Doing");
